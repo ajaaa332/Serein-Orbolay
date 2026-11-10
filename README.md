@@ -45,9 +45,9 @@ The bridge is compiled into Serein. You run Serein and Orbolay together; no Pyth
 
 ## Screenshot
 
-<!-- Add the owner's supplied screenshot here once it is available. Do not substitute an upstream or synthetic screenshot for a live integration capture. -->
+![Maintainer-provided screenshot showing Orbolay voice participants on the left and a message notification in the upper-right corner](docs/screenshots/orbolay-integration.png)
 
-A screenshot of this fork running with Orbolay will be added here.
+Screenshot supplied by **ajaaa332** during manual testing. Orbolay's voice roster is visible on the left, including a muted participant, and a message notification appears in the upper-right corner.
 
 ## Download and install
 
