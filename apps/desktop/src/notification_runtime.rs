@@ -107,6 +107,7 @@ impl Runtime {
 		window: &winit::window::Window,
 		ctx: &eframe::egui::Context,
 		fixture: bool,
+		orbolay: &mut orbolay_bridge::Bridge,
 	) -> Option<Alert> {
 		let live = !fixture && !state.demo && state.auth == AuthState::Authenticated;
 		let audible = live && ui.own_presence.status != PresenceStatus::DoNotDisturb;
@@ -134,6 +135,7 @@ impl Runtime {
 			};
 			if audible {
 				if ui.notifications_enabled && !current {
+					crate::orbolay::notify(orbolay, state, &notification);
 					let image_path = state.user.as_ref().and_then(|user| {
 						crate::avatars::notification_image_path(user.id, &notification.avatar_key)
 					});

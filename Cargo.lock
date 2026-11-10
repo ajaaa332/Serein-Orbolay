@@ -4973,6 +4973,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "orbolay-bridge"
+version = "0.1.0"
+dependencies = [
+ "futures-util",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tokio-tungstenite",
+]
+
+[[package]]
 name = "ordered-float"
 version = "5.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6471,6 +6482,7 @@ dependencies = [
  "md4",
  "model",
  "opus2",
+ "orbolay-bridge",
  "platform",
  "png",
  "rasterlottie",

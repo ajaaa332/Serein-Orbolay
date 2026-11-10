@@ -38,6 +38,7 @@ mod notification_runtime;
 mod notification_sounds;
 #[cfg(feature = "demo")]
 mod onboarding_demo;
+mod orbolay;
 mod pointer;
 #[cfg(feature = "demo")]
 mod polls_demo;
@@ -1025,6 +1026,7 @@ struct Desktop {
 	demo_video_autoplay: Option<bool>,
 	notifications: platform::notifications::Notifications,
 	notification_runtime: notification_runtime::Runtime,
+	orbolay: orbolay_bridge::Bridge,
 	uploads: uploads::Uploads,
 	interaction_files: interaction_uploads::Files,
 	group_icon: group_icon::GroupIcon,
@@ -2379,6 +2381,7 @@ impl Desktop {
 				None
 			},
 			notification_runtime: Default::default(),
+			orbolay: orbolay_bridge::Bridge::start(runtime.handle()),
 			notifications: {
 				let wake = cc.egui_ctx.clone();
 				platform::notifications::Notifications::new(
@@ -5934,31 +5937,6 @@ impl eframe::App for Desktop {
 				self.command(command);
 			}
 		}
-		if let Some(alert) = self.notification_runtime.poll(
-			&mut self.state,
-			&mut self.messaging,
-			&self.window,
-			ctx,
-			self.fixture_only,
-		) {
-			match alert {
-				notification_runtime::Alert::Message {
-					channel,
-					title,
-					body,
-					avatar_key,
-					image_path,
-				} => {
-					if self
-						.notifications
-						.notify_channel(channel, title, body, image_path)
-						&& let Some(worker) = &self.avatars
-					{
-						worker.request(avatar_key);
-					}
-				}
-			}
-		}
 		self.messaging.voice_ptt_active = self.messaging.voice_push_to_talk
 			&& self.state.voice.active.is_some()
 			&& (self.messaging.push_to_talk_down(ctx) || self.hotkeys.push_to_talk_down());
@@ -5985,6 +5963,37 @@ impl eframe::App for Desktop {
 			self.voice.stop();
 		}
 		self.sync_tray(ctx);
+		self.orbolay.publish(orbolay::snapshot(
+			&self.state,
+			&self.messaging,
+			self.fixture_only,
+		));
+		if let Some(alert) = self.notification_runtime.poll(
+			&mut self.state,
+			&mut self.messaging,
+			&self.window,
+			ctx,
+			self.fixture_only,
+			&mut self.orbolay,
+		) {
+			match alert {
+				notification_runtime::Alert::Message {
+					channel,
+					title,
+					body,
+					avatar_key,
+					image_path,
+				} => {
+					if self
+						.notifications
+						.notify_channel(channel, title, body, image_path)
+						&& let Some(worker) = &self.avatars
+					{
+						worker.request(avatar_key);
+					}
+				}
+			}
+		}
 		if self.state.voice.active.is_some() {
 			// Speaking, notices, remote video, devices, hotkeys and deadlines each wake the UI
 			// themselves; this heartbeat only bounds a missed wake, so a call does not repaint at 20 Hz.

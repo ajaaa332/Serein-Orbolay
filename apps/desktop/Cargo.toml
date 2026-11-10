@@ -13,6 +13,7 @@ developer-session = []
 demo = ["dep:test-support", "ui/demo"]
 
 [dependencies]
+orbolay-bridge = { path = "../../crates/orbolay-bridge" }
 diagnostics.workspace = true
 extensions.workspace = true
 serde.workspace = true
